@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مسابقة سفر رومية - 60 سؤالاً</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #d35400;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --light: #f4f7f6;
+            --yellow: #f1c40f;
+            --white: #ffffff;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #bdc3c7;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--white);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--light);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 100;
+        }
+
+        h1 { font-size: 1.3rem; margin: 5px 0; color: var(--primary); }
+
+        #reg-screen, #block-screen { display: flex; flex-direction: column; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: bold; color: var(--secondary); font-size: 1rem; }
+        input { 
+            padding: 15px; 
+            border: 2px solid #ddd; 
+            border-radius: 12px; 
+            font-size: 1.1rem; 
+            outline: none;
+        }
+
+        .btn-main { 
+            background: var(--primary); 
+            color: white; 
+            padding: 18px; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            cursor: pointer;
+        }
+
+        #quiz-screen, #results-screen, #block-screen { display: none; }
+        
+        #timer-box {
+            background: #fdedec;
+            color: var(--danger);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1.3rem;
+            display: inline-block;
+            margin-top: 10px;
+            border: 2px solid var(--danger);
+        }
+
+        .stats-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 15px;
+            padding: 10px;
+            background: var(--light);
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .question-container { display: none; }
+        .question-container.active { display: block; }
+
+        .question-text { 
+            font-size: 1.1rem; 
+            color: var(--primary); 
+            margin-bottom: 25px; 
+            line-height: 1.6; 
+            font-weight: bold; 
+        }
+
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .option-item { 
+            background: #f8f9f9; 
+            padding: 16px; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            border: 2px solid #ebedef; 
+            font-size: 1rem; 
+        }
+        .option-item.selected { 
+            background: #ebf5fb; 
+            border-color: var(--secondary); 
+            font-weight: bold;
+        }
+
+        .nav-controls { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            gap: 10px; 
+            margin-top: 30px; 
+        }
+
+        .nav-btn { 
+            padding: 15px 5px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: bold; 
+            color: white; 
+        }
+        .btn-prev { background: #95a5a6; }
+        .btn-later { background: var(--yellow); color: #2c3e50; }
+        .btn-next { background: #3498db; }
+
+        .btn-finish { 
+            background: var(--success); 
+            width: 100%; 
+            margin-top: 20px; 
+            padding: 20px; 
+            font-size: 1.2rem;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        .nav-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); 
+            gap: 5px; 
+            margin-top: 25px; 
+            padding-top: 20px; 
+            border-top: 2px solid #eee; 
+        }
+        .nav-dot { 
+            aspect-ratio: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #eee; 
+            border-radius: 8px; 
+            font-size: 0.7rem; 
+        }
+        .nav-dot.current { background: var(--primary); color: white; }
+        .nav-dot.answered { background: #d4e6f1; border: 1px solid var(--secondary); }
+        .nav-dot.later { background: var(--yellow); }
+
+        .result-card { 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 12px; 
+            border-right: 6px solid #ccc; 
+            font-size: 0.9rem;
+        }
+        .result-card.correct { border-right-color: var(--success); background: #f4faf6; }
+        .result-card.wrong { border-right-color: var(--danger); background: #fdf7f7; }
+
+        .error-msg {
+            color: var(--danger);
+            text-align: center;
+            font-weight: bold;
+            padding: 40px 20px;
+            background: #fdedec;
+            border-radius: 12px;
+            border: 2px solid var(--danger);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>مسابقة سفر رومية (60 سؤال)</h1>
+        <div id="timer-box" style="display:none;">25:00</div>
+    </header>
+
+    <!-- Block Screen -->
+    <div id="block-screen">
+        <div class="error-msg">
+            <h2>⛔ تم استهلاك المحاولة</h2>
+            <p>لقد قمت بفتح المسابقة مسبقاً من هذا الجهاز.</p>
+            <p style="font-size: 0.9rem; color: #555; margin-top: 10px;">نعتذر، القوانين تسمح بفتح الاختبار مرة واحدة فقط.</p>
+        </div>
+    </div>
+
+    <!-- Registration -->
+    <div id="reg-screen">
+        <div style="text-align: center; color: var(--danger); font-weight: bold; margin-bottom: 15px; background: #fff8f0; padding: 15px; border: 1px dashed var(--danger); border-radius: 10px; font-size: 0.9rem;">
+            تنبيه: بمجرد البدء، سيتم قفل المسابقة على هذا الجهاز.<br>
+            الوقت المتاح: 25 دقيقة لـ 60 سؤال.
+        </div>
+        <div class="form-group">
+            <label>الاسم بالكامل:</label>
+            <input type="text" id="u-name" placeholder="أدخل اسمك...">
+        </div>
+        <div class="form-group">
+            <label>رقم الموبايل:</label>
+            <input type="tel" id="u-phone" placeholder="أدخل رقمك...">
+        </div>
+        <button class="btn-main" onclick="start()">بدء المسابقة الآن</button>
+    </div>
+
+    <!-- Quiz -->
+    <div id="quiz-screen">
+        <div class="stats-bar">
+            <span id="prog-txt">السؤال 1 من 60</span>
+            <span id="stat-txt">بانتظار الإجابة</span>
+        </div>
+        <div id="q-wrapper"></div>
+        <div class="nav-controls">
+            <button class="nav-btn btn-prev" onclick="nav(-1)">السابق</button>
+            <button class="nav-btn btn-later" onclick="markLater()">تأجيل</button>
+            <button class="nav-btn btn-next" onclick="nav(1)">التالي</button>
+        </div>
+        <button class="btn-finish" onclick="finish()">إنهاء وإرسال النتيجة</button>
+        <div class="nav-grid" id="nav-grid"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="results-screen">
+        <div style="text-align:center; margin-bottom: 20px;">
+            <div style="color: var(--success); font-weight: bold; margin-bottom: 10px;">تم تسجيل نتيجتك!</div>
+            <h2 id="res-val" style="font-size: 2.5rem; color: var(--primary); margin:0;">0/60</h2>
+            <p id="res-info" style="font-weight:bold;"></p>
+        </div>
+        <button class="btn-main" style="background:#25D366; width:100%" onclick="sendWA()">إرسال النتيجة عبر واتساب</button>
+        <div id="res-list" style="margin-top:20px;"></div>
+    </div>
+</div>
+
+<script>
+    const ATTEMPT_KEY = "romans_quiz_lock_v1";
+    const TARGET_WHATSAPP = "971568326116"; // غير الرقم هنا عند الحاجة
+
+    const questions = [
+        { q: "بماذا يصف بولس نفسه في بداية الرسالة؟", options: ["عبد ليسوع المسيح ومفرز لإنجيل الله", "تلميذ مخلص", "رسول الأمم فقط", "رئيس للكهنة"], correct: 0, ref: "1:1" },
+        { q: "بماذا تعين ابن الله في قوة؟", options: ["بالمعجزات", "من جهة روح القداسة بالقيامة من الأموات", "بشهادة الناس", "بالموعظة"], correct: 1, ref: "1:4" },
+        { q: "لماذا كان بولس يشكر الله من جهة جميع المؤمنين في روما؟", options: ["لأجل ثروتهم", "لأن إيمانهم ينادى به في كل العالم", "لأجل لطفهم معه", "لأجل صومهم"], correct: 1, ref: "1:8" },
+        { q: "ما هو الشيء الذي لا يستحي به بولس لأنه قوة الله للخلاص؟", options: ["الناموس", "إنجيل المسيح", "الفلسفة", "الختان"], correct: 1, ref: "1:16" },
+        { q: "بماذا يعيش البار؟", options: ["بالأعمال", "بالإيمان", "بالصدقة", "بالصبر"], correct: 1, ref: "1:17" },
+        { q: "ماذا استبدل الناس الذين يدعون الحكمة بجماد وصور؟", options: ["مجد الله الذي لا يفنى", "الحياة", "الفكر", "الكرامة"], correct: 0, ref: "1:23" },
+        { q: "ماذا يذخر الإنسان لنفسه إذا كان قلبه غير تائب؟", options: ["مالاً", "غضباً في يوم الغضب", "رحمة", "أياماً طويلة"], correct: 1, ref: "2:5" },
+        { q: "ماذا سيجازي الله كل واحد؟", options: ["حسب نيته", "حسب أعماله", "حسب علمه", "حسب ماله"], correct: 1, ref: "2:6" },
+        { q: "هل هناك محاباة عند الله؟", options: ["نعم قليلاً", "ليس عند الله محاباة", "فقط لليهود", "فقط للأمم"], correct: 1, ref: "2:11" },
+        { q: "من هم الذين يتبررون أمام الله بخصوص الناموس؟", options: ["سامعو الناموس", "عاملو الناموس", "حاملو الناموس", "القراء"], correct: 1, ref: "2:13" },
+        { q: "أين يكتب الناموس بالنسبة للأمم الذين ليس لهم ناموس؟", options: ["في الكتب", "على الحجارة", "في قلوبهم", "لا يكتب"], correct: 2, ref: "2:15" },
+        { q: "ما هو الختان الحقيقي حسب الرسالة؟", options: ["ختان الجسد", "ختان القلب بالروح", "ختان الرأس", "لا يوجد ختان"], correct: 1, ref: "2:29" },
+        { q: "ما هي الأفضلية التي لليهود؟", options: ["الأرض", "أنهم استؤمنوا على أقوال الله", "الذهب", "العدد الكبير"], correct: 1, ref: "3:2" },
+        { q: "ما هي العبارة التي تصف حال جميع الناس (يهوداً ويونانيين)؟", options: ["الجميع أبرار", "الجميع تحت الخطية", "الجميع حكماء", "الجميع أغنياء"], correct: 1, ref: "3:9" },
+        { q: "بماذا يكون معرفة الخطية؟", options: ["بالفكر", "بالناموس", "بالكلام", "بالحلم"], correct: 1, ref: "3:20" },
+        { q: "بماذا يتبرر المؤمنون مجاناً؟", options: ["بتعبهم", "بنعمة الله بالفداء الذي بيسوع المسيح", "بصلواتهم", "بأصوامهم"], correct: 1, ref: "3:24" },
+        { q: "أين افتخر بولس أنه لا يوجد افتخار؟", options: ["في الناموس", "في الإيمان", "في العمل", "في الحكمة"], correct: 1, ref: "3:27" },
+        { q: "بماذا آمن إبراهيم فحُسب له براً؟", options: ["بأعماله", "بالله", "بناموس موسى", "بالقوة"], correct: 1, ref: "4:3" },
+        { q: "هل حُسب البر لإبراهيم وهو في الختان أم في الغرلة؟", options: ["في الختان", "في الغرلة", "بعد موته", "بينهما"], correct: 1, ref: "4:10" },
+        { q: "إبراهيم هو أب لجميع الذين يؤمنون وهم في...؟", options: ["الختان", "الغرلة", "الهيكل", "السجن"], correct: 1, ref: "4:11" },
+        { q: "ماذا يفعل الضيق حسب الأصحاح الخامس؟", options: ["يولد حزناً", "يولد صبراً", "يولد يأساً", "يولد غضباً"], correct: 1, ref: "5:3" },
+        { q: "بماذا انسكبت محبة الله في قلوبنا؟", options: ["بالماء", "بالروح القدس المعطى لنا", "بالدم", "بالكلام"], correct: 1, ref: "5:5" },
+        { q: "ونحن بعد خطاة، ماذا فعل المسيح لأجلنا؟", options: ["وعظنا", "مات لأجلنا", "شفي مرضانا", "أطعمنا"], correct: 1, ref: "5:8" },
+        { q: "بواسطة من دخلت الخطية إلى العالم؟", options: ["إنسان واحد (آدم)", "إبليس فقط", "قابيل", "فرعون"], correct: 0, ref: "5:12" },
+        { q: "حيث كثرت الخطية هناك...؟", options: ["كثر الموت", "ازدادت النعمة جداً", "انتهى العالم", "قل الصبر"], correct: 1, ref: "5:20" },
+        { q: "بماذا دُفنا مع المسيح للموت؟", options: ["بالصلاة", "بالمعمودية", "بالصوم", "بالبكاء"], correct: 1, ref: "6:4" },
+        { q: "ما هي أجرة الخطية؟", options: ["تعب", "موت", "فقر", "مرض"], correct: 1, ref: "6:23" },
+        { q: "ما هي موهبة الله في المسيح يسوع؟", options: ["ذهب", "حياة أبدية", "سلطان", "صحة"], correct: 1, ref: "6:23" },
+        { q: "الناموس يسود على الإنسان ما دام...؟", options: ["صغيراً", "حياً", "مؤمناً", "مخطئاً"], correct: 1, ref: "7:1" },
+        { q: "بماذا يخدم بولس ناموس الله؟", options: ["بجسده", "بذهنه", "بماله", "بلسانه"], correct: 1, ref: "7:25" },
+        { q: "لا شيء من الدينونة الآن على الذين هم في...؟", options: ["العالم", "المسيح يسوع", "أورشليم", "الهيكل"], correct: 1, ref: "8:1" },
+        { q: "اهتمام الجسد هو موت، واهتمام الروح هو...؟", options: ["تعب", "حياة وسلام", "قلق", "نوم"], correct: 1, ref: "8:6" },
+        { q: "إن كان الله معنا، فمن...؟", options: ["ينصرنا", "علينا", "يتركنا", "يخافنا"], correct: 1, ref: "8:31" },
+        { q: "من سيفصلنا عن محبة المسيح؟", options: ["الناس", "لا شيء (لا شدة ولا ضيق ولا...)", "الخطية", "الموت الجسدي"], correct: 1, ref: "8:35" },
+        { q: "لمن هي التبني والمجد والعهود والاشتراع؟", options: ["للرومان", "للإسرائيليين", "لليونانيين", "للمصريين"], correct: 1, ref: "9:4" },
+        { q: "ليس لمن يشاء ولا لمن يسعى، بل لله الذي...؟", options: ["يعطي", "يرحم", "يغفر", "يحكم"], correct: 1, ref: "9:16" },
+        { q: "من هو غاية الناموس للبر لكل من يؤمن؟", options: ["موسى", "المسيح", "بولس", "داود"], correct: 1, ref: "10:4" },
+        { q: "بماذا يكون الإيمان؟", options: ["بالنظر", "بالخبر والخبر بكلمة الله", "باللمس", "بالتجربة"], correct: 1, ref: "10:17" },
+        { q: "هل رفض الله شعبه؟", options: ["نعم", "حاشا", "ربما", "في العهد الجديد فقط"], correct: 1, ref: "11:1" },
+        { q: "ماذا يطلب بولس أن نقدم أجسادنا؟", options: ["محرقة", "ذبيحة حية مقدسة مرضية عند الله", "تراباً", "للزينة"], correct: 1, ref: "12:1" },
+        { q: "لا تشاكلوا هذا الدهر، بل...؟", options: ["اهربوا منه", "تغيروا عن شكلكم بتجديد أذهانكم", "حاربوه", "وافقوه"], correct: 1, ref: "12:2" },
+        { q: "المحبة فلتكن بلا...؟", options: ["خوف", "رياء", "تعب", "مال"], correct: 1, ref: "12:9" },
+        { q: "باركوا على الذين...؟", options: ["يحبونكم", "يطردونكم", "يعطونكم", "يصلون معكم"], correct: 1, ref: "12:14" },
+        { q: "فرحاً مع الفرحين و... مع الباكين؟", options: ["صلاة", "بكاءً", "صوماً", "صبراً"], correct: 1, ref: "12:15" },
+        { q: "إن جاع عدوك...؟", options: ["اتركه", "فأطعمه", "حاربه", "لا تكلمه"], correct: 1, ref: "12:20" },
+        { q: "لا يغلبنك الشر بل...؟", options: ["اهرب", "اغلب الشر بالخير", "قاوم بالقوة", "احزن"], correct: 1, ref: "12:21" },
+        { q: "لتخضع كل نفس لـ...؟", options: ["أهوائها", "السلاطين الفائقة", "أصدقائها", "أعدائها"], correct: 1, ref: "13:1" },
+        { q: "المحبة لا تصنع... للقريب؟", options: ["خيراً", "شراً", "فرحاً", "سلاماً"], correct: 1, ref: "13:10" },
+        { q: "المحبة هي... الناموس؟", options: ["نهاية", "تكميل", "بداية", "صعوبة"], correct: 1, ref: "13:10" },
+        { q: "البسوا الرب يسوع المسيح، ولا تصنعوا تدبيراً لـ...؟", options: ["للمستقبل", "للجسد لأجل الشهوات", "للبيت", "للعمل"], correct: 1, ref: "13:14" },
+        { q: "من أنت الذي... عبد غيرك؟", options: ["تضرب", "تدين", "تحب", "تساعد"], correct: 1, ref: "14:4" },
+        { q: "لأن ليس ملكوت الله أكلاً وشرباً، بل هو...؟", options: ["نوم وراحة", "بر وسلام وفرح في الروح القدس", "صوم وصلاة فقط", "تعب وحزن"], correct: 1, ref: "14:17" },
+        { q: "كل ما ليس من الإيمان فهو...؟", options: ["خطية", "مباح", "صواب", "ضعف"], correct: 0, ref: "14:23" },
+        { q: "يجب علينا نحن الأقوياء أن نحمل... الضعفاء؟", options: ["أمتعة", "أوهان", "أموال", "خطايا"], correct: 1, ref: "15:1" },
+        { q: "كل ما سبق وكُتب، كُتب لأجل...؟", options: ["الماضي", "تعليمنا", "اليهود فقط", "الذكرى"], correct: 1, ref: "15:4" },
+        { q: "أوصي بـ... أختنا التي هي خادمة الكنيسة؟", options: ["فيبى", "مريم", "بريسكيلا", "ليذية"], correct: 0, ref: "16:1" },
+        { q: "من هما اللذان يصفهما بولس بـ 'العاملين معي في المسيح'؟", options: ["بطرس ويوحنا", "بريسكيلا وأكيلا", "لوقا ومرقس", "تيموثاوس وسلوانس"], correct: 1, ref: "16:3" },
+        { q: "سلموا بعضكم على بعض بـ...؟", options: ["كلام طيب", "قبلة مقدسة", "رسائل", "هدايا"], correct: 1, ref: "16:16" },
+        { q: "إله السلام سيسحق... تحت أرجلكم سريعاً؟", options: ["الأعداء", "الشيطان", "المرض", "الموت"], correct: 1, ref: "16:20" },
+        { q: "من هو كاتب الرسالة (الذي كتبها بيده لبولس)؟", options: ["بولس نفسه", "تيرتيوس", "غايس", "أراستس"], correct: 1, ref: "16:22" }
+    ];
+
+    let current = 0, answers = new Array(questions.length).fill(null), later = new Set(), timeLeft = 25 * 60, userData = {}, timer;
+
+    window.onload = function() {
+        if (localStorage.getItem(ATTEMPT_KEY)) {
+            document.getElementById('reg-screen').style.display = 'none';
+            document.getElementById('block-screen').style.display = 'flex';
+        }
+    };
+
+    function start() {
+        userData.name = document.getElementById('u-name').value;
+        userData.phone = document.getElementById('u-phone').value;
+        
+        if(!userData.name || !userData.phone) return alert("من فضلك أدخل بياناتك كاملة");
+        
+        localStorage.setItem(ATTEMPT_KEY, "locked");
+        
+        document.getElementById('reg-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        document.getElementById('timer-box').style.display = 'inline-block';
+        
+        buildQuiz();
+        startTimer();
+    }
+
+    function buildQuiz() {
+        const wrapper = document.getElementById('q-wrapper');
+        const grid = document.getElementById('nav-grid');
+        questions.forEach((q, i) => {
+            const div = document.createElement('div');
+            div.className = `question-container ${i===0?'active':''}`;
+            div.id = `q-cnt-${i}`;
+            div.innerHTML = `<div class="question-text">${i+1}. ${q.q}</div><div class="options-list">${q.options.map((o, idx) => `<div class="option-item" onclick="select(${i}, ${idx})" id="opt-${i}-${idx}">${o}</div>`).join('')}</div>`;
+            wrapper.appendChild(div);
+
+            const dot = document.createElement('div');
+            dot.className = `nav-dot ${i===0?'current':''}`;
+            dot.id = `dot-${i}`;
+            dot.innerText = i + 1;
+            dot.onclick = () => jump(i);
+            grid.appendChild(dot);
+        });
+    }
+
+    function startTimer() {
+        timer = setInterval(() => {
+            timeLeft--;
+            if(timeLeft <= 0) finish(true);
+            const m = Math.floor(timeLeft/60), s = timeLeft%60;
+            document.getElementById('timer-box').innerText = `${m}:${s<10?'0':''}${s}`;
+            if(timeLeft < 120) document.getElementById('timer-box').style.color = 'red';
+        }, 1000);
+    }
+
+    function select(qIdx, optIdx) {
+        answers[qIdx] = optIdx;
+        document.querySelectorAll(`#q-cnt-${qIdx} .option-item`).forEach((el, idx) => el.classList.toggle('selected', idx === optIdx));
+        document.getElementById(`dot-${qIdx}`).classList.add('answered');
+        later.delete(qIdx);
+        document.getElementById(`dot-${qIdx}`).classList.remove('later');
+        updateUI();
+    }
+
+    function jump(n) {
+        document.getElementById(`q-cnt-${current}`).classList.remove('active');
+        document.getElementById(`dot-${current}`).classList.remove('current');
+        current = n;
+        document.getElementById(`q-cnt-${current}`).classList.add('active');
+        document.getElementById(`dot-${current}`).classList.add('current');
+        updateUI();
+    }
+
+    function nav(step) {
+        let t = current + step; if(t >= 0 && t < questions.length) jump(t);
+    }
+
+    function markLater() { later.add(current); document.getElementById(`dot-${current}`).classList.add('later'); nav(1); }
+    
+    function updateUI() {
+        document.getElementById('prog-txt').innerText = `السؤال ${current + 1} من 60`;
+        document.getElementById('stat-txt').innerText = answers[current] !== null ? 'تم الاختيار ✅' : 'بانتظار الإجابة';
+    }
+
+    function finish(force = false) {
+        if(force || confirm("هل تريد إنهاء المسابقة الآن؟")) {
+            clearInterval(timer);
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('timer-box').style.display = 'none';
+            document.getElementById('results-screen').style.display = 'block';
+            
+            let score = 0, listHtml = '';
+            questions.forEach((q, i) => {
+                const isCorrect = answers[i] === q.correct; if(isCorrect) score++;
+                listHtml += `<div class="result-card ${isCorrect?'correct':'wrong'}"><b>${i+1}. ${q.q}</b><br><small>إجابتك: ${answers[i]!==null?q.options[answers[i]]:'لا توجد'}</small> | <small>الصحيحة: ${q.options[q.correct]}</small> <span style="float:left; color:#777;">(رومية ${q.ref})</span></div>`;
+            });
+            
+            document.getElementById('res-val').innerText = `${score}/60`;
+            document.getElementById('res-info').innerText = userData.name;
+            document.getElementById('res-list').innerHTML = listHtml;
+            window.scrollTo(0,0);
+        }
+    }
+
+    function sendWA() {
+        const score = document.getElementById('res-val').innerText;
+        const msg = `*نتيجة مسابقة سفر رومية*%0A*الاسم:* ${userData.name}%0A*الموبايل:* ${userData.phone}%0A*الدرجة:* ${score}%0A*تم الانتهاء من الاختبار.*`;
+        window.open(`https://wa.me/${TARGET_WHATSAPP}?text=${msg}`, '_blank');
+    }
+</script>
+</body>
+</html>
