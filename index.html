@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مسابقة سفر رومية - 60 سؤالاً</title>
+    <title>مسابقة سفر رومية - 20 دقيقة</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -204,10 +204,9 @@
 <div class="container">
     <header>
         <h1>مسابقة سفر رومية (60 سؤال)</h1>
-        <div id="timer-box" style="display:none;">25:00</div>
+        <div id="timer-box" style="display:none;">20:00</div>
     </header>
 
-    <!-- Screen for users who already tried -->
     <div id="block-screen">
         <div class="error-msg">
             <h2>⛔ تم استهلاك المحاولة</h2>
@@ -215,11 +214,10 @@
         </div>
     </div>
 
-    <!-- Registration -->
     <div id="reg-screen">
         <div style="text-align: center; color: var(--danger); font-weight: bold; margin-bottom: 15px; background: #fff8f0; padding: 15px; border: 1px dashed var(--danger); border-radius: 10px; font-size: 0.9rem;">
             تنبيه: الاختبار متاح لمرة واحدة فقط.<br>
-            الوقت: 25 دقيقة للإجابة على 60 سؤال.
+            الوقت: 20 دقيقة للإجابة على 60 سؤال.
         </div>
         <div class="form-group">
             <label>الاسم بالكامل:</label>
@@ -232,7 +230,6 @@
         <button class="btn-main" onclick="start()">بدء الاختبار الآن</button>
     </div>
 
-    <!-- Quiz Screen -->
     <div id="quiz-screen">
         <div class="stats-bar">
             <span id="prog-txt">السؤال 1 من 60</span>
@@ -248,7 +245,6 @@
         <div class="nav-grid" id="nav-grid"></div>
     </div>
 
-    <!-- Results Screen -->
     <div id="results-screen">
         <div style="text-align:center; margin-bottom: 20px;">
             <div style="color: var(--success); font-weight: bold; margin-bottom: 10px;">تم تسجيل نتيجتك بنجاح!</div>
@@ -264,14 +260,13 @@
     const ATTEMPT_KEY = "romans_quiz_final_lock";
     const TARGET_WHATSAPP = "971568326116";
 
-    // Questions with balanced option lengths
     const questions = [
         { q: "بماذا يصف بولس نفسه في بداية الرسالة؟", options: ["خادم للكنيسة ورسول مختار", "عبد ليسوع المسيح ورسول مفرز", "تلميذ مخلص ومبشر للامم", "كاهن العهد وخادم للشعوب"], correct: 1, ref: "1:1" },
         { q: "بماذا تعين ابن الله في قوة من جهة الروح؟", options: ["بصعوده للسماء", "بقيامته للموت", "بقيامته للاموات", "بظهوره للنور"], correct: 2, ref: "1:4" },
         { q: "لماذا يشكر بولس الله لأجل مؤمني روما؟", options: ["لان صومهم عظيم", "لان ايمانهم مشهور", "لان حبهم معروف", "لان صلاتهم قوية"], correct: 1, ref: "1:8" },
         { q: "إنجيل المسيح هو قوة الله للخلاص لكل من...؟", options: ["يعمل ويجتهد", "يصلي ويصوم", "يؤمن ويرجو", "يؤمن ويصدق"], correct: 3, ref: "1:16" },
         { q: "كما هو مكتوب في الاصحاح الاول: البار بـ... يعيش؟", options: ["بالتقوى", "بالاعمال", "بالايمان", "بالصلاة"], correct: 2, ref: "1:17" },
-        { q: "ماذا استبدل الناس الذين ضلوا في أفكارهم؟", options: ["مجد الله الحق", "مجد الله الباقي", "مجد الله الفاني", "مجد الله القوي"], correct: 1, ref: "1:23" },
+        { q: "ماذا استبدل الناس الذين ضلوا في أفكارهم؟", options: ["مجد الله الحق", "مجد الله الباقي", "مجد الله الفاني", "مجد الله القوي"], correct: 2, ref: "1:23" },
         { q: "بماذا يجازي الله كل واحد في يوم الدينونة؟", options: ["حسب نيته فقط", "حسب ماله فقط", "حسب اعماله فقط", "حسب علمه فقط"], correct: 2, ref: "2:6" },
         { q: "يقول الرسول بولس أنه ليس عند الله...؟", options: ["تغيير ابدا", "محاباة ابدا", "نسيان ابدا", "تراجع ابدا"], correct: 1, ref: "2:11" },
         { q: "من هم الأبرار حقيقة أمام الله بخصوص الناموس؟", options: ["قراء الناموس", "حفظة الناموس", "سامعو الناموس", "عاملو الناموس"], correct: 3, ref: "2:13" },
@@ -286,7 +281,7 @@
         { q: "متى حُسب البر لإبراهيم (بخصوص الختان)؟", options: ["في الختان", "في الغرلة", "بعد موته", "بين الاثنين"], correct: 1, ref: "4:10" },
         { q: "إبراهيم هو أب لكل الذين يؤمنون وهم في...؟", options: ["في الغرلة", "في الختان", "في الهيكل", "في المذبح"], correct: 0, ref: "4:11" },
         { q: "ماذا يولد الضيق في حياة المؤمنين؟", options: ["يولد حزناً", "يولد صبراً", "يولد يأساً", "يولد قلقاً"], correct: 1, ref: "5:3" },
-        { q: "بماذا انسكبت محبة الله في قلوبنا؟", options: ["بالماء الحي", "بالروح القدس", "بالدم الثمين", "بالحق المبين"], correct: 1, ref: "5:5" },
+        { q: "بماذا انسكبت محبة الله في قلوبنا؟", options: ["بالروح الحق", "بالروح القدس", "بالدم الثمين", "بالحق المبين"], correct: 1, ref: "5:5" },
         { q: "ونحن بعد خطاة، ماذا فعل المسيح لأجلنا؟", options: ["أحبنا فقط", "شفي مرضانا", "مات لاجلنا", "علمنا الحق"], correct: 2, ref: "5:8" },
         { q: "بواسطة من دخلت الخطية إلى العالم كله؟", options: ["بإنسان واحد", "بشعب واحد", "بملاك واحد", "بفكر واحد"], correct: 0, ref: "5:12" },
         { q: "حيث كثرت الخطية هناك ازدادت...؟", options: ["الدينونة جدا", "الرحمة جدا", "النعمة جدا", "القسوة جدا"], correct: 2, ref: "5:20" },
@@ -328,7 +323,7 @@
         { q: "بماذا يختم بولس الرسالة في النهاية؟", options: ["بنعمة الرب", "بصلاة طويلة", "بشكر الناس", "بتحذير شديد"], correct: 0, ref: "16:24" }
     ];
 
-    let current = 0, answers = new Array(questions.length).fill(null), later = new Set(), timeLeft = 25 * 60, userData = {}, timer;
+    let current = 0, answers = new Array(questions.length).fill(null), later = new Set(), timeLeft = 20 * 60, userData = {}, timer;
 
     window.onload = function() {
         if (localStorage.getItem(ATTEMPT_KEY)) {
@@ -373,7 +368,7 @@
             if(timeLeft <= 0) finish(true);
             const m = Math.floor(timeLeft/60), s = timeLeft%60;
             document.getElementById('timer-box').innerText = `${m}:${s<10?'0':''}${s}`;
-            if(timeLeft < 120) document.getElementById('timer-box').style.color = 'red';
+            if(timeLeft < 60) document.getElementById('timer-box').style.color = 'red';
         }, 1000);
     }
 
